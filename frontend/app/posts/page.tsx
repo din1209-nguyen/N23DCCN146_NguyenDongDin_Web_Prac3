@@ -1,5 +1,6 @@
 'use client';
 import api from '@/lib/api';
+import toast from 'react-hot-toast';
 import { useState, useEffect, FormEvent } from 'react';
 
 // Định nghĩa interface cho Post để dùng TypeScript chuẩn hơn
@@ -26,13 +27,17 @@ export default function PostsPage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    try {
-      await api.post('/api/posts', { title, content, author });
+    
+    const promise = api.post('/api/posts', { title, content, author }).then(() => {
       setTitle(''); setContent(''); setAuthor('');
       fetchPosts();
-    } catch (err: any) {
-      console.error(err.response?.data?.error);
-    }
+    });
+
+    toast.promise(promise, {
+      loading: 'Đang lưu...',
+      success: 'Đăng bài thành công!',
+      error: 'Có lỗi xảy ra!',
+    });
   };
 
   return (
